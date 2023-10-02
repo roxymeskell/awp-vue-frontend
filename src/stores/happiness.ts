@@ -54,19 +54,45 @@ export const useHappinessStore = defineStore('happiness',{
       return (id: number) => state.happiness.find((h) => h.id == id)
     },
     getHappinessChartData(state: HappinessState) {
-      return state.happiness.map(({ id, very_happy, happy, content, unhappy, very_unhappy, created_at, updated_at, ...data}) => { return { data }  });
-      // return state.employeeHappiness.teams.map(({ id, name, very_happy, happy, content, unhappy, very_unhappy, ...data}) => ({ data }));
+      return state.happiness.map(
+        ({ name, is_workplace = false, very_happy_and_happy_percent = 0, very_happy_percent = 0, happy_percent = 0, content_percent = 0, unhappy_percent = 0, very_unhappy_percent = 0, not_happy_percent = 0 }) =>
+        { return {
+            label: name,
+            is_workplace,
+            data: [
+              { x: 'Very Happy + Happy', y: very_happy_and_happy_percent },
+              { x: 'Very Happy', y: very_happy_percent },
+              { x: 'Happy', y: happy_percent },
+              { x: 'Content', y: content_percent },
+              { x: 'Unhappy', y: unhappy_percent },
+              { x: 'Very Unhappy', y: very_unhappy_percent },
+              { x: 'Not Happy', y: not_happy_percent },
+            ]
+          }  }
+      );
     },
-    // getTotalHappiness(state){
-    //   return state.employeeHappiness.total
-    // },
   },
   actions: {
-    async fetchHappiness() {
+    async fetchAllHappiness() {
       try {
-
           const data = await axios.get(url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness'))
           this.happiness = data.data
+        }
+        catch (error) {
+          alert(error);
+          console.log(error);
+      }
+    },
+    async fetchHappiness(id: number) {
+      try {
+          const data = await axios.get(url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness/' + id))
+          const index = this.happiness.findIndex((h) => h.id == id);
+          if (index != -1) {
+            this.happiness.splice(this.happiness.findIndex((h) => h.id == id), 1, data.data);
+          } else {
+            this.happiness.push(data.data);
+          }
+          
         }
         catch (error) {
           alert(error);
