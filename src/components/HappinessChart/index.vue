@@ -1,11 +1,12 @@
 <template>
-    <!-- <Bar :data="data" :options="options" :plugins="[gradient]" ref="chart" /> -->
+    <!-- <Bar :data="data" :options="options" :plugins="plugins" ref="chart" /> -->
     <HappinessBarChart id="happiness" :data="data" :options="options" :plugins="plugins" />
     <!-- <CustomChart id="custom" :data="data" :options="options" :plugins="plugins" /> -->
 </template>
   
 <script setup lang="ts">
 // import CustomChart from './CustomChart.ts';
+import { Bar } from 'vue-chartjs'
 import { ref, onMounted, computed, withCtx } from 'vue';
 import HappinessBarChart from './HappinessBarChart';
 import {
@@ -21,14 +22,15 @@ ChartData,
 
 import ChartAreaBorderPlugin from './chartAreaBorderPlugin.ts';
 import GradientPlugin from './gradientPlugin.ts';
-import { HappinessCategoryScale } from './happinessCategoryScale.ts';
+import { HappinessCategoryScale, ChartLabelsPlugin } from './happinessCategoryScale.ts';
 
 import { useHappinessStore } from '../../stores/happiness'
 
 // defineProps<{ msg: string }>()
 
 // defineProps<{ chartData: ChartData, chartOptions: ChartOptions }>()
-defineProps<{ data: ChartData<'bar'> }>()
+const props = defineProps<{ data: ChartData<'bar'> }>()
+console.log('VUE CHART', props.data)
 
 // const store = useHappinessStore();
 // const data = computed(() => {
@@ -58,16 +60,17 @@ LinearScale,
 
 const plugins = [
     GradientPlugin,
-    ChartAreaBorderPlugin
+    ChartAreaBorderPlugin,
+    // ChartLabelsPlugin
 ];
 
 // const options = chartConfig.options;
 const options: any = { responsive: true, maintainAspectRatio: false };
 options.minBarLength = 3;
 options.borderRadius = 8;
-options.layout = {
-  padding: { bottom: 50, /*top: 76*/ },
-};
+// options.layout = {
+//   padding: { bottom: 50, /*top: 76*/ },
+// };
 options.scales = {
   x: {
     type: 'happiness-category',

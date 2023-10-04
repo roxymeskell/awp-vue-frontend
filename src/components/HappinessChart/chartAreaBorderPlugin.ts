@@ -13,25 +13,20 @@ const chartAreaBorder = {
     const {
       ctx,
       canvas: { height: canvasHeight },
-      chartArea: { left, width }, // top, height
+      chartArea: { left, width, height: chartHeight }, // top, height
     } = chart;
     const top = 0 + paddingTop;
     const height = canvasHeight - paddingTop;
     ctx.save();
     ctx.strokeStyle = options.borderColor || '';
     ctx.lineWidth = options.borderWidth || 0;
-    // ctx.setLineDash(options.borderDash || []);
-    // ctx.lineDashOffset = options.borderDashOffset;
-    // ctx.strokeRect(left, top, width, height);
-    // ctx.roundRect(left, top, width, height, options.borderRadius || 0);
     ctx.roundRect(
       left,
       top,
       width,
-      height, // chart.canvas.height,
+      height, // height, // chart.canvas.height,
       options.borderRadius || 0
     );
-    console.log('Drawing border plugin', left, 0, width, height, ctx.strokeStyle, ctx.lineWidth)
 
     // Drawing gridlines
     const scale = chart.scales.x
@@ -39,7 +34,7 @@ const chartAreaBorder = {
     let x = scale.getPixelForValue('Very Happy + Happy.center') +
     scale.getPixelForValue('Very Happy + Happy.width') / 2;
     ctx.moveTo(x, top);
-    ctx.lineTo(x, height);
+    ctx.lineTo(x, top + height);
 
     x = scale.getPixelForValue('Happy.center') +
     scale.getPixelForValue('Happy.width') / 2;
@@ -49,7 +44,7 @@ const chartAreaBorder = {
     x = scale.getPixelForValue('Very Unhappy.center') +
     scale.getPixelForValue('Very Unhappy.width') / 2;
     ctx.moveTo(x, top);
-    ctx.lineTo(x, height);
+    ctx.lineTo(x, top + height);
 
     ctx.stroke();
     ctx.restore();

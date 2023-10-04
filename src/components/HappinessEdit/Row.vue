@@ -38,12 +38,15 @@ defineEmits(['update:very_happy', 'update:happy', 'update:content', 'update:unha
 </template>
 
 <style>
+@media only screen and (max-width: 768px) {
+    .happiness-grid-cell.name {
+        grid-column: 1 / span 1;
+        grid-row: span 3 / span 3;
+    }
+}
+
 .happiness-grid-cell {
   position: relative;
-  /*margin-left: 1.8rem; /* 28.8px */
-  /*padding-top: 0.25rem; /* 4px */
-  /*padding-bottom: 0.25rem; /* 4px */
-
   grid-column: span 1 / span 1;
 }
 .happiness-grid-cell.name {
@@ -64,8 +67,6 @@ defineEmits(['update:very_happy', 'update:happy', 'update:content', 'update:unha
     position: absolute;
     top: 10px;
     left: 10px;
-    /*margin-left: 1.8rem;*/
-    margin-top: 0.25rem;
     color: #8B929C;
     font-size: 12px;
     line-height: 14px;

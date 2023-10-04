@@ -1,5 +1,99 @@
-import { CategoryScale, CategoryScaleOptions, registry } from 'chart.js';
+import { Chart, CategoryScale, CategoryScaleOptions, registry } from 'chart.js';
 import { merge } from 'chart.js/helpers';
+import { getStyleForLabel, createImageForLabel } from '../../happinessStyleHelpers';
+
+function drawImageAt(ctx, image, size: number, x: number) {
+  const { width: oWidth = size, height: oHeight = size } = image;
+  const width = oWidth * size / oHeight, height = oHeight * size / oWidth;
+  // image, dx, dy, width, height
+  ctx.drawImage(image, x - size / 2, size - height, size, height);
+  // image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight
+  // ctx.drawImage(image, 0, size - height, size, height, x - size / 2, 0, size, size)
+}
+
+function drawGradientTab(ctx, startColor, stopColor, x, width = 120, y = 0) {
+  const height = 25;
+  // const gradient = ctx.createLinearGradient(0, y, 0, y + height);
+  const gradient = ctx.createLinearGradient(0, y - height, 0, y + height);
+  gradient.addColorStop(0, stopColor);
+  gradient.addColorStop(0.5, startColor);
+  ctx.fillStyle = gradient;
+
+  let region = new Path2D();
+  region.roundRect(x - width / 2, y - height, width, height * 2, 16);
+  ctx.fill(region);
+
+  // ctx.fillRect(10, 10, 150, 80);
+}
+
+function drawLabelFor(ctx, scale, topPadding, label, factor = 1) {
+  const image = createImageForLabel(label);
+  const style = getStyleForLabel(label);
+  const center = scale.getPixelForValue(label)
+  console.log('Label For', label, image, style)
+  drawImageAt(ctx, image, 76, scale.getPixelForValue(label));
+  drawGradientTab(
+    ctx,
+    style.gradientStart,
+    style.gradientEnd,
+    center,
+    label === 'Very Happy + Happy' || label === 'Not Happy'
+      ? 120 * factor
+      : scale.getPixelForValue(label + '.width'),
+    topPadding
+  );
+
+  ctx.font = style.tab.font
+  ctx.fillStyle = '#FFFFFF'
+  ctx.fillText(style.tab.text, center, topPadding - (25 / 2))
+
+  // ctx.save()
+}
+
+
+function chartLabelsBeforeDraw(chart: Chart, args, options) {
+    const { layout: { padding: { top: paddingTop = 0 } = {} } = {} } =
+      chart.options as any;
+    const {
+      ctx,
+      canvas: { height: canvasHeight },
+      chartArea: { left, width }, // top, height
+    } = chart;
+    const top = 0 + paddingTop;
+    const height = canvasHeight - paddingTop;
+    ctx.save();
+
+    // ctx.beginPath();
+    // ctx.arc(100, 75, 50, 0, Math.PI * 2);
+    // ctx.rect(left, 0, width, paddingTop);
+    // ctx.clip();
+
+    let region = new Path2D();
+    region.rect(left, 0, width, paddingTop);
+    ctx.clip(region, 'evenodd');
+
+    console.log('happiness label', args, chart);
+
+    const scale = chart.scales.x;
+    const factor = 1; // 7 / (scale.getPixelForValue('Not Happy') + scale.getPixelForValue('Not Happy.width')/2);
+
+    ctx.font = 'bold 14px Roboto'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+
+    drawLabelFor(ctx, scale, paddingTop, 'Very Happy + Happy', factor);
+    drawLabelFor(ctx, scale, paddingTop, 'Very Happy', factor);
+    drawLabelFor(ctx, scale, paddingTop, 'Happy', factor);
+    drawLabelFor(ctx, scale, paddingTop, 'Content', factor);
+    drawLabelFor(ctx, scale, paddingTop, 'Unhappy', factor);
+    drawLabelFor(ctx, scale, paddingTop, 'Very Unhappy', factor);
+    drawLabelFor(ctx, scale, paddingTop, 'Not Happy', factor);
+    console.log('Finished drawing labels')
+
+    ctx.stroke();
+    ctx.restore();
+}
+
 
 interface ILabelNodeCol {
   width: number;
@@ -41,9 +135,10 @@ export interface IHappinessCategoryScaleOptions extends CategoryScaleOptions {
   ];
 }
 
-const defaultConfig: Partial<Omit<IHappinessCategoryScaleOptions, 'grid' | 'border'>> & {
+const defaultConfig: Partial<Omit<IHappinessCategoryScaleOptions, 'grid' | 'border' | 'ticks'>> & {
   grid: Partial<IHappinessCategoryScaleOptions['grid']>;
   border: Partial<IHappinessCategoryScaleOptions['border']>;
+  ticks: Partial<IHappinessCategoryScaleOptions['ticks']>;
 } = {
   // offset settings, for centering the categorical axis in the bar chart case
   offset: true,
@@ -70,19 +165,18 @@ const defaultConfig: Partial<Omit<IHappinessCategoryScaleOptions, 'grid' | 'bord
     display: true,
     drawOnChartArea: false,
     drawTicks: false,
-    // lineWidth: (context) => {
-    //   console.log(context);
-    //   const { tick: { label: tickLabel = 'None' } = {} } = context;
-
-    //   switch (tickLabel) {
-    //     case 'None':
-    //     case 'Very Happy':
-    //     case 'Content':
-    //     case 'Not Happy':
-    //       return 2;
-    //   }
-    //   return 0;
-    // },
+  },
+  ticks: {
+    color: (context) => {
+      return getStyleForLabel(context.tick.label).labelFont.color
+    },
+    font: (context) => {
+      return {
+        weight: 'bold',
+        family: 'Roboto',
+        ...getStyleForLabel(context.tick.label).labelFont
+      };
+    },
   },
   category_padding: 20,
   column_width: 45,
@@ -105,6 +199,10 @@ export class HappinessCategoryScale extends CategoryScale<IHappinessCategoryScal
   // Register plugins after register
   static afterRegister(): void {
     // registry.addPlugins(HappinessLabelPlugin);
+    registry.addPlugins({
+      id: 'happiness-label-plugin',
+      beforeDraw: chartLabelsBeforeDraw.bind(this),
+    })
   }
 
   determineDataLimits(): void {
@@ -170,16 +268,6 @@ export class HappinessCategoryScale extends CategoryScale<IHappinessCategoryScal
       // eslint-disable-next-line no-param-reassign
       node.width = width;
 
-      node.col = {
-        width: (i === 0 || i === 6
-          ? this.options.total_column_width
-          : this.options.column_width) * this._factor,
-        center: node.center - node.fullColWidth / 2 + node.colWidth / 2
-      }
-      node.auxCol = {
-        width: this.options.aux_column_width * this._factor,
-        center: node.center + node.fullColWidth / 2 - node.auxColWidth / 2
-      }
       node.fullCol = {
         width: (this.options.aux_column_width +
             this.options.aux_column_sep +
@@ -188,6 +276,18 @@ export class HappinessCategoryScale extends CategoryScale<IHappinessCategoryScal
               : this.options.column_width)) *
           this._factor,
         center: node.center
+      }
+      node.col = {
+        width: (i === 0 || i === 6
+          ? this.options.total_column_width
+          : this.options.column_width) * this._factor,
+        center: node.center - node.fullCol.width / 2 + ((i === 0 || i === 6
+          ? this.options.total_column_width
+          : this.options.column_width) * this._factor) / 2
+      }
+      node.auxCol = {
+        width: this.options.aux_column_width * this._factor,
+        center: node.center + node.fullCol.width / 2 - (this.options.aux_column_width * this._factor) / 2
       }
     });
   }

@@ -54,22 +54,24 @@ export const useHappinessStore = defineStore('happiness',{
       return (id: number) => state.happiness.find((h) => h.id == id)
     },
     getHappinessChartData(state: HappinessState) {
-      return state.happiness.map(
-        ({ name, is_workplace = false, very_happy_and_happy_percent = 0, very_happy_percent = 0, happy_percent = 0, content_percent = 0, unhappy_percent = 0, very_unhappy_percent = 0, not_happy_percent = 0 }) =>
-        { return {
-            label: name,
-            is_workplace,
-            data: [
-              { x: 'Very Happy + Happy', y: very_happy_and_happy_percent },
-              { x: 'Very Happy', y: very_happy_percent },
-              { x: 'Happy', y: happy_percent },
-              { x: 'Content', y: content_percent },
-              { x: 'Unhappy', y: unhappy_percent },
-              { x: 'Very Unhappy', y: very_unhappy_percent },
-              { x: 'Not Happy', y: not_happy_percent },
-            ]
-          }  }
-      );
+      return {
+        datasets: state.happiness.map(
+          ({ name, is_workplace = false, very_happy_and_happy_percent = 0, very_happy_percent = 0, happy_percent = 0, content_percent = 0, unhappy_percent = 0, very_unhappy_percent = 0, not_happy_percent = 0 }) =>
+          { return {
+              label: name,
+              is_workplace,
+              data: [
+                { x: 'Very Happy + Happy', y: very_happy_and_happy_percent },
+                { x: 'Very Happy', y: very_happy_percent },
+                { x: 'Happy', y: happy_percent },
+                { x: 'Content', y: content_percent },
+                { x: 'Unhappy', y: unhappy_percent },
+                { x: 'Very Unhappy', y: very_unhappy_percent },
+                { x: 'Not Happy', y: not_happy_percent },
+              ]
+            }  }
+        )
+      };
     },
   },
   actions: {

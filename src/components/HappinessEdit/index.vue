@@ -58,6 +58,12 @@ async function onSave() {
 </template>
 
 <style scoped>
+@media only screen and (max-width: 768px) {
+    .happiness-grid {
+        grid-template-columns: repeat(3, minmax(0, max-content)) !important;
+    }
+}
+
 .happiness-container {
   display: flex;
   flex-direction: column;
