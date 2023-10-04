@@ -1,17 +1,40 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Roboto;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+  letter-spacing: 0em;
+  color: #162438;
+  background-color: #fff;
+
+  /* font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #242424; */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+.container {
+  
+  padding: 2rem;
+  width: 100%;
+}
+
+/* Usually lg screens are 1024px, but this matches the Figma. 1031px + 4rem for padding */
+@media only screen and (min-width: 1095px) {
+  .container {
+    max-width: 1031px;
+  }
 }
 
 a {

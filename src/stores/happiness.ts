@@ -122,7 +122,7 @@ export const useHappinessStore = defineStore('happiness',{
     },
     async deleteHappiness(id: number) {
       try {
-        const data = await axios.delete(url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness/' + id))
+        await axios.delete(url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness/' + id))
         this.happiness.splice(this.happiness.findIndex((h) => h.id == id), 1);
       }
       catch (error) {
