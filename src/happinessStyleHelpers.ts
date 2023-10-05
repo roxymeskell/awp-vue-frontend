@@ -44,7 +44,7 @@ function createCombinedImage(urls: string[], reverse = false) {
     imgOver = 18
   const canvas = document.createElement('canvas')
   canvas.width = urls.length * imgW - (urls.length - 1) * imgOver
-  canvas.height = imgW // 76
+  canvas.height = imgW + 8
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
   const images: HTMLImageElement[] = urls.map((u) => createImage(u))
   let x = 0
@@ -60,23 +60,6 @@ function createCombinedImage(urls: string[], reverse = false) {
     }
   }
   return canvas
-}
-
-function createGradient(
-  startColor: string,
-  stopColor: string,
-  { ctx = null as CanvasRenderingContext2D | null, chartArea: { top = 100, bottom = 0, height = 100 } = {} } = {},
-  value: number = 1
-) {
-  if (!ctx) {
-    ctx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D
-  }
-  const gradient = ctx.createLinearGradient(0, bottom, 0, bottom - height * value)
-  gradient.addColorStop(0, startColor)
-  gradient.addColorStop(1, stopColor)
-  ctx.fill()
-  ctx.restore()
-  return gradient
 }
 
 function getGradientCreator(startColor: string, stopColor: string) {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed, onMounted } from 'vue'
   import HappinessInputRow from './Row.vue'
-  import { HappinessData, useHappinessStore } from '../../stores/happiness'
+  import { HappinessData, useHappinessStore } from '@/stores/happiness'
 
   const store = useHappinessStore()
   const happiness = computed(() => {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import { onMounted } from 'vue'
-  import { useHappinessStore } from '../stores/happiness'
-  import Chart from './Chart.vue'
-  import Header from './Header.vue'
-  import HappinessEdit from './HappinessEdit/index.vue'
+  import { useHappinessStore } from '@/stores/happiness'
+  import Chart from '@/components/Chart.vue'
+  import Header from '@/components/Header.vue'
+  import DataForm from '@/components/DataForm'
 
   const store = useHappinessStore()
   onMounted(() => {
@@ -18,7 +18,7 @@
       <Chart/>
     </div>
 
-    <HappinessEdit />
+    <DataForm />
   </div>
 </template>
 

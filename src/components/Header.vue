@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { computed } from 'vue'
-  import { useHappinessStore } from '../stores/happiness'
+  import { useHappinessStore } from '@/stores/happiness'
 
   const store = useHappinessStore()
 
@@ -37,6 +37,7 @@
     font-size: 28px;
     font-weight: 700;
     line-height: 33px;
+    text-align: center;
     letter-spacing: 0em;
     color: #002236;
     width: 100%;
