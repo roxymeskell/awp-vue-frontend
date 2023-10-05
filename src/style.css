@@ -27,6 +27,6 @@
 /* Usually lg screens are 1024px, but this matches the Figma. 1031px + 4rem for padding */
 @media only screen and (min-width: 1095px) {
   .container {
-    max-width: 1031px;
+    max-width: 1095px;
   }
 }
