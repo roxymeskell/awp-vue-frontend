@@ -21,6 +21,7 @@
   margin: 0 auto;
   padding: 2rem;
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* Usually lg screens are 1024px, but this matches the Figma. 1031px + 4rem for padding */
