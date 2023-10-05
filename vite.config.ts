@@ -10,16 +10,14 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: [
         {
-            find: /@\/components\/((?!.*[.](ts|js|tsx|jsx|vue)$).*$)/,
-            replacement: fileURLToPath(
-                new URL("./src/components/$1/index.vue", import.meta.url)
-            ),
+          find: /@\/components\/((?!.*[.](ts|js|tsx|jsx|vue)$).*$)/,
+          replacement: fileURLToPath(new URL('./src/components/$1/index.vue', import.meta.url)),
         },
         {
-            find: "@",
-            replacement: fileURLToPath(new URL("./src", import.meta.url)),
+          find: '@',
+          replacement: fileURLToPath(new URL('./src', import.meta.url)),
         },
-      ]
-    }
+      ],
+    },
   }
 })
