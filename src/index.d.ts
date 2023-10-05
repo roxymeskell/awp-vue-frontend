@@ -1,9 +1,12 @@
 import { ChartTypeRegistry } from 'chart.js'
+import { HappinessDataPoint } from './chart/HappinessBarChart'
 
 declare module '*.svg'
 
 declare module 'chart.js' {
   interface ChartTypeRegistry {
-    'happiness-bar': ChartTypeRegistry['bar']
+    'happiness-bar': Omit<ChartTypeRegistry['bar'], 'defaultDataPoint'> & {
+      defaultDataPoint: HappinessDataPoint | null
+    }
   }
 }

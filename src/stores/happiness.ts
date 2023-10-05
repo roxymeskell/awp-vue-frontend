@@ -1,12 +1,13 @@
 // stores/employeeHappiness.js
-import { ChartData } from 'chart.js'
 import { defineStore } from 'pinia'
 // Import axios to make HTTP requests
 import axios from 'axios'
 import url from 'url'
 
+import { HappinessChartData, HappinessChartDataset } from '@/chart/HappinessBarChart'
+
 export type HappinessData = {
-  id?: number
+  id: number
   name?: string
   is_workplace?: boolean
   very_happy: number
@@ -24,6 +25,12 @@ export type HappinessData = {
   created_at?: string
   updated_at?: string
 }
+
+type HappinessUpdateData = Pick<HappinessData, 'name' | 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'>
+type HappinessCreateData = Pick<
+  HappinessData,
+  'name' | 'is_workplace' | 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'
+>
 
 interface HappinessState {
   happiness: HappinessData[]
@@ -49,9 +56,9 @@ function transformToChartData(
     not_happy_percent = 0,
   }: HappinessData,
   workplaceHidden: boolean = false
-) {
+): HappinessChartDataset {
   return {
-    label: name,
+    label: name || '',
     hidden: is_workplace && workplaceHidden,
     data: [
       { x: 'Very Happy + Happy', y: very_happy_and_happy_percent },
@@ -77,7 +84,8 @@ export const useHappinessStore = defineStore('happiness', {
     getHappinessById(state: HappinessState) {
       return (id: number) => state.happiness.find((h) => h.id == id)
     },
-    getHappinessChartData(state: HappinessState): ChartData<'bar', any> {
+    getHappinessChartData(state: HappinessState): HappinessChartData {
+      // ChartData<'happiness-bar', number | [number, number] | null>
       return {
         datasets: state.happiness.map((h) => transformToChartData(h, state.workplaceHidden)),
       }
@@ -96,7 +104,7 @@ export const useHappinessStore = defineStore('happiness', {
         this.happiness = data.data
       } catch (error) {
         alert(error)
-        console.log(error)
+        console.error(error)
       }
     },
     async fetchHappiness(id: number) {
@@ -114,10 +122,10 @@ export const useHappinessStore = defineStore('happiness', {
         }
       } catch (error) {
         alert(error)
-        console.log(error)
+        console.error(error)
       }
     },
-    async updateHappiness(id: number, happinessData: HappinessData) {
+    async updateHappiness(id: number, happinessData: HappinessUpdateData) {
       try {
         const data = await axios.put(
           url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness/' + id),
@@ -131,10 +139,10 @@ export const useHappinessStore = defineStore('happiness', {
         )
       } catch (error) {
         alert(error)
-        console.log(error)
+        console.error(error)
       }
     },
-    async createHappiness(happinessData: HappinessData) {
+    async createHappiness(happinessData: HappinessCreateData) {
       try {
         const data = await axios.post(
           url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness'),
@@ -143,7 +151,7 @@ export const useHappinessStore = defineStore('happiness', {
         this.happiness.push(data.data)
       } catch (error) {
         alert(error)
-        console.log(error)
+        console.error(error)
       }
     },
     async deleteHappiness(id: number) {
@@ -155,7 +163,7 @@ export const useHappinessStore = defineStore('happiness', {
         )
       } catch (error) {
         alert(error)
-        console.log(error)
+        console.error(error)
       }
     },
     toggleWorkplace() {

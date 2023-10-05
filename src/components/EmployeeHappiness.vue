@@ -15,7 +15,7 @@
   <div class="container">
     <Header />
     <div style="min-height: 450px">
-      <Chart/>
+      <Chart />
     </div>
 
     <DataForm />

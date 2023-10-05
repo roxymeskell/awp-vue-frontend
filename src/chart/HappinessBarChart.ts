@@ -1,20 +1,17 @@
 import { createTypedChart } from 'vue-chartjs'
-import {
-  BarController,
-  BarControllerChartOptions,
-  Chart,
-  Scale,
-  registry,
-  Title,
-  BarElement,
-  LinearScale,
-  ChartData,
-} from 'chart.js'
+import { BarController, registry, ChartDataset, ChartData } from 'chart.js'
 import { merge } from 'chart.js/helpers'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import HappinessCategoryScale from './HappinessCategoryScale'
 import Gradients from './GradientsPlugin'
-import { datalabelsConfig } from '../happinessStyleHelpers'
+import { datalabelsConfig } from '@/helpers/chartPluginHelpers'
+
+export type HappinessDataPoint = {
+  x: 'Very Happy + Happy' | 'Very Happy' | 'Happy' | 'Content' | 'Unhappy' | 'Very Unhappy' | 'Not Happy'
+  y?: number
+}
+export type HappinessChartDataset = ChartDataset<'happiness-bar', HappinessDataPoint[]>
+export type HappinessChartData = ChartData<'happiness-bar', HappinessDataPoint[]>
 
 const defaultConfig = {
   datasetElementType: false,
@@ -53,7 +50,7 @@ class HappinessBarController extends BarController {
         ticks: {
           padding: 10,
           stepSize: 0.25,
-          callback: (value) => `${value * 100}%`,
+          callback: (value: number) => `${value * 100}%`,
           color: '#8B929C',
           font: { family: 'Roboto', size: 16 },
         },
@@ -78,11 +75,10 @@ class HappinessBarController extends BarController {
     registry.addPlugins(Gradients)
   }
 
-  public _calculateBarIndexPixels(index, ruler) {
+  public _calculateBarIndexPixels(index: number, ruler: any) {
     const scale = ruler.scale
     const options = (this as any).options
     const skipNull = options.skipNull
-    const maxBarThickness = Infinity // valueOrDefault(options.maxBarThickness, Infinity);
     let center, size
     if (ruler.grouped) {
       const stackCount = skipNull ? (this as any)._getStackCount(index) : ruler.stackCount
@@ -124,6 +120,9 @@ class HappinessBarController extends BarController {
   }
 }
 
-const HappinessBarChart = createTypedChart('happiness-bar', HappinessBarController)
+const HappinessBarChart = createTypedChart<'happiness-bar', HappinessDataPoint[]>(
+  'happiness-bar',
+  HappinessBarController
+)
 
 export default HappinessBarChart

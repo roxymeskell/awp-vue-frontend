@@ -1,5 +1,5 @@
 import type { Chart, ChartDataset } from 'chart.js'
-import { getGradientCreatorForLabel } from '../happinessStyleHelpers'
+import { getGradientCreatorForLabel } from '@/helpers/happinessStyleHelpers'
 
 type HappinessChartDataset = ChartDataset<'bar', any>
 
@@ -12,13 +12,15 @@ function colorizeWorkplaceDataset(dataset: HappinessChartDataset) {
 }
 
 function colorizeTeamDataset(dataset: HappinessChartDataset, chart: Chart) {
-  dataset.backgroundColor = dataset.data.map((d) => getTeamDataBackgroundColor(d.x, chart, d.y))
+  dataset.backgroundColor = dataset.data.map((d: { x: string; y: number }) =>
+    getTeamDataBackgroundColor(d.x, chart, d.y)
+  )
 }
 
 function getTeamDataBackgroundColor(key: string, chart: Chart, value: number = 1) {
-  const  { ctx = null as CanvasRenderingContext2D | null, chartArea: { top = 100, bottom = 0 } = {} } = chart
+  const { ctx = null as CanvasRenderingContext2D | null, chartArea: { top = 100, bottom = 0 } = {} } = chart
   const getGradient = getGradientCreatorForLabel(key)
-  return getGradient(ctx, bottom, top, value);
+  return getGradient(ctx, bottom, top, value)
 }
 
 function getColorizer(chart: Chart) {
@@ -40,14 +42,13 @@ export default {
     forceOverride: false,
   } as GradientsPluginOptions,
 
-  beforeLayout(chart: Chart<'bar', any, any>, _args, options: GradientsPluginOptions) {
+  beforeLayout(chart: Chart<'bar', any, any>, _args: any, options: GradientsPluginOptions) {
     if (!options.enabled) {
       return
     }
 
     const {
       data: { datasets },
-      options: chartOptions,
     } = chart.config
 
     const colorizer = getColorizer(chart)

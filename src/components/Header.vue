@@ -13,13 +13,8 @@
   <div class="header">
     <h1 class="title">Employee Happiness Comparison</h1>
     <label>
-      <input type="checkbox" 
-        :value="workplaceShow"
-        @input="store.toggleWorkplace"
-      >
-      <span class="checkmark-label">
-        Compare to Workplace
-      </span>
+      <input type="checkbox" :value="workplaceShow" @input="store.toggleWorkplace" />
+      <span class="checkmark-label"> Compare to Workplace </span>
     </label>
   </div>
 </template>
@@ -47,7 +42,7 @@
     right: 0;
   }
 
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     -webkit-appearance: none;
     appearance: none;
     background-color: #fff;
@@ -66,24 +61,24 @@
     place-content: center;
   }
 
-  input[type="checkbox"]:checked {
-    background-color: #008FCF;
+  input[type='checkbox']:checked {
+    background-color: #008fcf;
     transition: 120ms color ease-in-out;
   }
 
-  input[type="checkbox"]::before {
-    content: "";
+  input[type='checkbox']::before {
+    content: '';
     width: 0.6rem;
     height: 0.6rem;
     transform: scale(0);
     transition: 120ms transform ease-in-out;
-    box-shadow: inset 1em 1em #FFF;
+    box-shadow: inset 1em 1em #fff;
 
     transform-origin: center;
     clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
   }
 
-  input[type="checkbox"]:checked::before {
+  input[type='checkbox']:checked::before {
     transform: scale(1);
   }
 </style>

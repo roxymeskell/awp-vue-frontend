@@ -1,34 +1,7 @@
-import { Chart, CategoryScale, CategoryScaleOptions } from 'chart.js'
+import { Chart, CategoryScale, CategoryScaleOptions, ChartArea } from 'chart.js'
 import { merge } from 'chart.js/helpers'
-import { getStyleForLabel, createImageForLabel } from '../happinessStyleHelpers'
-
-function drawImageAt(ctx, image, size: number, x: number = 0, y: number = 0) {
-  const { width: oWidth = size, height: oHeight = size } = image
-  let adjWidth: number = oWidth,
-    adjHeight: number = oHeight
-  if (oWidth > oHeight) {
-    adjWidth = size
-    adjHeight = (oHeight * size) / oWidth
-  } else {
-    adjWidth = (oWidth * size) / oHeight
-    adjHeight = size
-  }
-  // image, dx, dy, width, height
-  ctx.drawImage(image, x - adjWidth / 2, y - adjHeight, adjWidth, adjHeight);
-}
-
-function drawGradientTab(ctx, startColor, stopColor, x, width = 120, y = 0) {
-  const height = 25
-  const gradient = ctx.createLinearGradient(0, y- height, 0, y)
-  gradient.addColorStop(0, stopColor)
-  gradient.addColorStop(1, startColor)
-  ctx.fillStyle = gradient
-
-  const region = new Path2D()
-  // region.roundRect(x - width / 2, y - height, width, height * 2, 16)
-  region.roundRect(x - width / 2, y - height, width, height, [16, 16, 0, 0])
-  ctx.fill(region)
-}
+import { getStyleForLabel, createImageForLabel } from '@/helpers/happinessStyleHelpers'
+import { drawImageAt, drawGradientTab } from '@/helpers/drawHelpers'
 
 interface ILabelNodeCol {
   width: number
@@ -81,13 +54,13 @@ const defaultConfig: Partial<Omit<IHappinessCategoryScaleOptions, 'grid' | 'bord
   },
   ticks: {
     color: (context) => {
-      return getStyleForLabel(context.tick.label).labelFont.color
+      return getStyleForLabel(context.tick.label as string).labelFont.color
     },
     font: (context) => {
       return {
         weight: 'bold',
         family: 'Roboto',
-        ...getStyleForLabel(context.tick.label).labelFont,
+        ...getStyleForLabel(context.tick.label as string).labelFont,
       }
     },
   },
@@ -103,24 +76,19 @@ export default class HappinessCategoryScale extends CategoryScale<IHappinessCate
   static defaults: any = /*! __PURE__ */ merge({}, [CategoryScale.defaults, defaultConfig])
 
   private _nodes: any[] = []
-  _factor: number
-  _totalWidth: number
+  private _factor: number = 1
+  private _totalWidth: number = 0
 
-  _drawLabelFor(ctx, paddingTop, label) {
+  _drawLabelFor(ctx: CanvasRenderingContext2D, paddingTop: number, label: string) {
     const image = createImageForLabel(label)
     const style = getStyleForLabel(label)
     const center = this.getPixelForValue(label)
-    const width = label === 'Very Happy + Happy' || label === 'Not Happy' ? 120 * this._factor : this.getPixelForValue(label + '.width')
-    console.log('Label For', label, image, style, this.getPixelForValue(label + '.width'))
+    const width =
+      label === 'Very Happy + Happy' || label === 'Not Happy'
+        ? 120 * this._factor
+        : this.getPixelForValue(label + '.width')
     drawImageAt(ctx, image, Math.min(76, width, paddingTop), this.getPixelForValue(label), paddingTop - 8)
-    drawGradientTab(
-      ctx,
-      style.tab.gradient.start,
-      style.tab.gradient.end,
-      center,
-      width,
-      paddingTop
-    )
+    drawGradientTab(ctx, style.tab.gradient.start, style.tab.gradient.end, center, width, paddingTop)
 
     ctx.font = style.tab.font
     ctx.fillStyle = '#FFFFFF'
@@ -133,48 +101,44 @@ export default class HappinessCategoryScale extends CategoryScale<IHappinessCate
     const ctx = this.ctx
     const bottom = chart.scales.y.bottom
 
-    const { borderColor = '#BABEC4', layout: { padding: { top: paddingTop = 0 } = {} } = {} } = chart.options as any;
-    const { canvas: { height: canvasHeight } } = chart
+    const { borderColor = '#BABEC4', layout: { padding: { top: paddingTop = 0 } = {} } = {} } = chart.options as any
+    const {
+      canvas: { height: canvasHeight },
+    } = chart
     const top = 0 + paddingTop
     const height = canvasHeight - paddingTop
 
-    const drawLine = (p1, p2) => {
-      ctx.save();
+    const drawLine = (p1: { x: number; y: number }, p2: { x: number; y: number }) => {
+      ctx.save()
       ctx.lineWidth = 1
       ctx.strokeStyle = borderColor
 
-      ctx.beginPath();
-      ctx.moveTo(p1.x, p1.y);
-      ctx.lineTo(p2.x, p2.y);
-      ctx.stroke();
-      ctx.restore();
-    };
+      ctx.beginPath()
+      ctx.moveTo(p1.x, p1.y)
+      ctx.lineTo(p2.x, p2.y)
+      ctx.stroke()
+      ctx.restore()
+    }
 
     let x = this.getPixelForValue('Very Happy + Happy.center') + this.getPixelForValue('Very Happy + Happy.width') / 2
-    drawLine(
-      {x: x, y: top},
-      {x: x, y: top + height},
-    );
+    drawLine({ x: x, y: top }, { x: x, y: top + height })
 
     x = this.getPixelForValue('Happy.center') + this.getPixelForValue('Happy.width') / 2
-    drawLine(
-      {x: x, y: top},
-      {x: x, y: bottom},
-    );
+    drawLine({ x: x, y: top }, { x: x, y: bottom })
 
     x = this.getPixelForValue('Very Unhappy.center') + this.getPixelForValue('Very Unhappy.width') / 2
-    drawLine(
-      {x: x, y: top},
-      {x: x, y: top + height},
-    );
+    drawLine({ x: x, y: top }, { x: x, y: top + height })
   }
 
   _drawBorder() {
     const chart = this.chart
     const ctx = this.ctx
 
-    const { borderColor = '#BABEC4', layout: { padding: { top: paddingTop = 0 } = {} } = {} } = chart.options as any;
-    const { canvas: { height: canvasHeight }, chartArea: { left, width } } = chart
+    const { borderColor = '#BABEC4', layout: { padding: { top: paddingTop = 0 } = {} } = {} } = chart.options as any
+    const {
+      canvas: { height: canvasHeight },
+      chartArea: { left, width },
+    } = chart
     const top = 0 + paddingTop
     const height = canvasHeight - paddingTop
 
@@ -183,14 +147,8 @@ export default class HappinessCategoryScale extends CategoryScale<IHappinessCate
     ctx.lineWidth = 1
 
     const region = new Path2D()
-    region.roundRect(
-      left,
-      top,
-      width,
-      height,
-      8,
-    )
-    
+    region.roundRect(left, top, width, height, 8)
+
     ctx.stroke(region)
     ctx.restore()
   }
@@ -199,23 +157,20 @@ export default class HappinessCategoryScale extends CategoryScale<IHappinessCate
     const { layout: { padding: { top: paddingTop = 0 } = {} } = {} } = chart.options as any
     const {
       ctx,
-      canvas: { height: canvasHeight },
-      chartArea: { left, width }, // top, height
+      chartArea: { left, width },
     } = chart
-    const top = 0 + paddingTop
-    const height = canvasHeight - paddingTop
     ctx.save()
-  
+
     const region = new Path2D()
     region.rect(left, 0, width, paddingTop)
     ctx.clip(region, 'evenodd')
-  
+
     ctx.font = 'bold 14px Roboto'
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
 
     this.getLabels().forEach((l) => this._drawLabelFor(ctx, paddingTop, l))
-  
+
     ctx.stroke()
     ctx.restore()
 
@@ -223,7 +178,7 @@ export default class HappinessCategoryScale extends CategoryScale<IHappinessCate
     this._drawBorder()
   }
 
-  draw(chartArea) {
+  draw(chartArea: ChartArea) {
     this._beforeDraw(this.chart)
     super.draw(chartArea)
   }
@@ -310,11 +265,10 @@ export default class HappinessCategoryScale extends CategoryScale<IHappinessCate
   }
 
   public override getLabels(): string[] {
-    const data = this.chart.data
     return ['Very Happy + Happy', 'Very Happy', 'Happy', 'Content', 'Unhappy', 'Very Unhappy', 'Not Happy']
   }
 
-  public override parse(raw: string, index?) {
+  public override parse(raw: string, index?: number) {
     if (raw === null || raw === undefined) {
       return null
     }
@@ -322,40 +276,6 @@ export default class HappinessCategoryScale extends CategoryScale<IHappinessCate
       return parseInt(raw)
     }
     return super.parse(raw, index) as number
-  }
-
-  _parseValueStr(value: string) {
-    const centerTick = this.options.offset
-    const base = (this as unknown as IInternalScale)._startPixel
-
-    const valueParts = (value as string).split('.')
-    const index = this.parse(valueParts[0])
-    if (index === null) {
-      return NaN
-    }
-    let node: ILabelNode | ILabelNodeCol = this._nodes[index as number]
-    if (node == null) {
-      return NaN
-    }
-
-    for (let i = 1; i < 3; i++) {
-      switch (valueParts[i]) {
-        case null:
-        case 'center':
-          return this._centerNodeCol(node)
-        case 'width':
-          return node.width
-        case 'col':
-          node = (node as ILabelNode).col
-          continue
-        case 'auxCol':
-          node = (node as ILabelNode).auxCol
-          continue
-        case 'fullCol':
-          node = (node as ILabelNode).fullCol
-          continue
-      }
-    }
   }
 
   getPixelForValue(value: number | string, index?: number | undefined | null): number {
@@ -407,11 +327,6 @@ export default class HappinessCategoryScale extends CategoryScale<IHappinessCate
       // corner case in chartjs to determine tick width, hard coded 1
       return this._nodes[0].width
     }
-    console.log('getPixelForDecimal', {
-      value,
-      old: super.getDecimalForPixel(value),
-      new: this._centerBase(index),
-    })
     return this._centerBase(index)
   }
 

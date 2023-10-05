@@ -1,51 +1,54 @@
 <script setup lang="ts">
-  import { ref } from 'vue'
   import { HappinessData } from '../../stores/happiness'
 
-  const props = defineProps<HappinessData>()
-  // defineProps<HappinessData>({
-  //     name: String,
-  //     very_happy: number,
-  //     happy: number,
-  //     content: number,
-  //     unhappy: number,
-  //     very_unhappy: number,
-  // })
-  defineEmits(['update:very_happy', 'update:happy', 'update:content', 'update:unhappy', 'update:very_unhappy'])
+  defineProps<Pick<HappinessData, 'name' | 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'>>()
+  const emit = defineEmits([
+    'update:very_happy',
+    'update:happy',
+    'update:content',
+    'update:unhappy',
+    'update:very_unhappy',
+  ])
+
+  function updateVeryHappy(e: Event) {
+    emit('update:very_happy', (e.target as HTMLInputElement).value)
+  }
+  function updateHappy(e: Event) {
+    emit('update:happy', (e.target as HTMLInputElement).value)
+  }
+  function updateContent(e: Event) {
+    emit('update:content', (e.target as HTMLInputElement).value)
+  }
+  function updateUnhappy(e: Event) {
+    emit('update:unhappy', (e.target as HTMLInputElement).value)
+  }
+  function updateVeryUnhappy(e: Event) {
+    emit('update:very_unhappy', (e.target as HTMLInputElement).value)
+  }
 </script>
 
 <template>
-  <span class="happiness-grid-cell name"
-    ><p style="width: 100%">{{ name }}</p></span
-  >
+  <span class="happiness-grid-cell name">
+    <p>{{ name }}</p>
+  </span>
   <span class="happiness-grid-cell">
-    <input
-      name="very_happy"
-      type="number"
-      :value="very_happy"
-      @input="$emit('update:very_happy', $event.target.value)"
-    />
+    <input name="very_happy" type="number" :value="very_happy" @input="updateVeryHappy" />
     <label for="very_happy">Very Happy</label>
   </span>
   <span class="happiness-grid-cell">
-    <input name="happy" type="number" :value="happy" @input="$emit('update:happy', $event.target.value)" />
+    <input name="happy" type="number" :value="happy" @input="updateHappy" />
     <label for="happy">Happy</label></span
   >
   <span class="happiness-grid-cell">
-    <input name="content" type="number" :value="content" @input="$emit('update:content', $event.target.value)" />
+    <input name="content" type="number" :value="content" @input="updateContent" />
     <label for="content">Content</label>
   </span>
   <span class="happiness-grid-cell">
-    <input name="unhappy" type="number" :value="unhappy" @input="$emit('update:unhappy', $event.target.value)" />
+    <input name="unhappy" type="number" :value="unhappy" @input="updateUnhappy" />
     <label for="unhappy">Unhappy</label>
   </span>
   <span class="happiness-grid-cell">
-    <input
-      name="very_unhappy"
-      type="number"
-      :value="very_unhappy"
-      @input="$emit('update:very_unhappy', $event.target.value)"
-    />
+    <input name="very_unhappy" type="number" :value="very_unhappy" @input="updateVeryUnhappy" />
     <label for="very_unhappy">Very Unhappy</label>
   </span>
 </template>
