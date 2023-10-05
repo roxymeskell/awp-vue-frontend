@@ -1,15 +1,11 @@
 <script setup lang="ts">
-  import { onMounted, computed } from 'vue'
+  import { onMounted } from 'vue'
   import { useHappinessStore } from '../stores/happiness'
   import Chart from './Chart.vue'
   import Header from './Header.vue'
   import HappinessEdit from './HappinessEdit/index.vue'
 
   const store = useHappinessStore()
-  const getHappiness = computed(() => {
-    return store.getHappiness
-  })
-
   onMounted(() => {
     store.fetchAllHappiness()
   })
@@ -22,7 +18,7 @@
       <Chart/>
     </div>
 
-    <HappinessEdit :happiness="getHappiness" />
+    <HappinessEdit />
   </div>
 </template>
 

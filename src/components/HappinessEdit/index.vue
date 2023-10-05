@@ -3,34 +3,16 @@
   import HappinessInputRow from './Row.vue'
   import { HappinessData, useHappinessStore } from '../../stores/happiness'
 
-  const props = defineProps<{ happiness: HappinessData[] }>()
-
-  // const happinessRef = ref(props.happiness.map((h) => {
-  //     return {
-  //         id: h.id,
-  //         name: h.name,
-  //         very_happy: h.very_happy,
-  //         happy: h.happy,
-  //         content: h.content,
-  //         unhappy: h.unhappy,
-  //         very_unhappy: h.very_unhappy,
-  //     }
-  // }))
-
-  const values: any = {
-    id: props.happiness.id,
-  }
-
   const store = useHappinessStore()
-  const happinessData = computed(() => {
-    return store.getHappinessChartData
+  const happiness = computed(() => {
+    return store.getHappiness
   })
   onMounted(() => {
     store.fetchAllHappiness()
   })
 
   async function onSave() {
-    for (const { id, very_happy, happy, content, unhappy, very_unhappy } of props.happiness) {
+    for (const { id, very_happy, happy, content, unhappy, very_unhappy } of happiness.value) {
       await store.updateHappiness(id, {
         very_happy,
         happy,
@@ -46,7 +28,6 @@
   <div class="happiness-container">
     <div class="happiness-grid-container">
       <div class="happiness-grid">
-        <!-- <HappinessInputRow v-for="h in happiness" :happiness="h" /> -->
         <HappinessInputRow
           v-for="h in happiness"
           :name="h.name"
