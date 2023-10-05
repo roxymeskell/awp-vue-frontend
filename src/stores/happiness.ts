@@ -78,14 +78,13 @@ export const useHappinessStore = defineStore('happiness', {
     workplaceHidden: true,
   }),
   getters: {
-    getHappiness(state: HappinessState): HappinessData[] {
+    getHappiness(state: HappinessState) {
       return state.happiness
     },
     getHappinessById(state: HappinessState) {
       return (id: number) => state.happiness.find((h) => h.id == id)
     },
     getHappinessChartData(state: HappinessState): HappinessChartData {
-      // ChartData<'happiness-bar', number | [number, number] | null>
       return {
         datasets: state.happiness.map((h) => transformToChartData(h, state.workplaceHidden)),
       }
@@ -168,6 +167,22 @@ export const useHappinessStore = defineStore('happiness', {
     },
     toggleWorkplace() {
       this.workplaceHidden = !this.workplaceHidden
+    },
+    setHappiness(id: number, key: string, value: number) {
+      try {
+        const happiness = this.happiness.find((h) => h.id == id)
+        if (!happiness) {
+          throw 'Happiness data not found'
+        }
+        this.happiness.splice(
+          this.happiness.findIndex((h) => h.id == id),
+          1,
+          { ...happiness, [key]: value }
+        )
+      } catch (error) {
+        alert(error)
+        console.error(error)
+      }
     },
   },
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, onMounted } from 'vue'
+  import { computed } from 'vue'
   import HappinessInputRow from './Row.vue'
   import { useHappinessStore } from '@/stores/happiness'
 
@@ -7,9 +7,10 @@
   const happiness = computed(() => {
     return store.getHappiness
   })
-  onMounted(() => {
-    store.fetchAllHappiness()
-  })
+
+  function onUpdate({ id, key, value }: { id: number; key: string; value: number }) {
+    store.setHappiness(id, key, value)
+  }
 
   async function onSave() {
     for (const { id, very_happy, happy, content, unhappy, very_unhappy } of happiness.value) {
@@ -30,12 +31,14 @@
       <div class="happiness-grid">
         <HappinessInputRow
           v-for="h in happiness"
+          :id="h.id"
           :name="h.name"
-          v-model:very_happy="h.very_happy"
-          v-model:happy="h.happy"
-          v-model:content="h.content"
-          v-model:unhappy="h.unhappy"
-          v-model:very_unhappy="h.very_unhappy"
+          :very_happy="h.very_happy"
+          :happy="h.happy"
+          :content="h.content"
+          :unhappy="h.unhappy"
+          :very_unhappy="h.very_unhappy"
+          @update:value="onUpdate"
         />
       </div>
     </div>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
   import { HappinessData } from '../../stores/happiness'
 
-  defineProps<Pick<HappinessData, 'name' | 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'>>()
+  const props =
+    defineProps<Pick<HappinessData, 'id' | 'name' | 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'>>()
   const emit = defineEmits([
+    'update:value',
     'update:very_happy',
     'update:happy',
     'update:content',
@@ -10,20 +12,12 @@
     'update:very_unhappy',
   ])
 
-  function updateVeryHappy(e: Event) {
-    emit('update:very_happy', (e.target as HTMLInputElement).value)
-  }
-  function updateHappy(e: Event) {
-    emit('update:happy', (e.target as HTMLInputElement).value)
-  }
-  function updateContent(e: Event) {
-    emit('update:content', (e.target as HTMLInputElement).value)
-  }
-  function updateUnhappy(e: Event) {
-    emit('update:unhappy', (e.target as HTMLInputElement).value)
-  }
-  function updateVeryUnhappy(e: Event) {
-    emit('update:very_unhappy', (e.target as HTMLInputElement).value)
+  function onUpdate(e: Event) {
+    emit('update:value', {
+      id: props.id,
+      key: (e.target as HTMLInputElement).name,
+      value: parseInt((e.target as HTMLInputElement).value),
+    })
   }
 </script>
 
@@ -32,23 +26,23 @@
     <p>{{ name }}</p>
   </span>
   <span class="happiness-grid-cell">
-    <input name="very_happy" type="number" :value="very_happy" @input="updateVeryHappy" />
+    <input name="very_happy" type="number" :value="very_happy" @input="onUpdate" />
     <label for="very_happy">Very Happy</label>
   </span>
   <span class="happiness-grid-cell">
-    <input name="happy" type="number" :value="happy" @input="updateHappy" />
+    <input name="happy" type="number" :value="happy" @input="onUpdate" />
     <label for="happy">Happy</label></span
   >
   <span class="happiness-grid-cell">
-    <input name="content" type="number" :value="content" @input="updateContent" />
+    <input name="content" type="number" :value="content" @input="onUpdate" />
     <label for="content">Content</label>
   </span>
   <span class="happiness-grid-cell">
-    <input name="unhappy" type="number" :value="unhappy" @input="updateUnhappy" />
+    <input name="unhappy" type="number" :value="unhappy" @input="onUpdate" />
     <label for="unhappy">Unhappy</label>
   </span>
   <span class="happiness-grid-cell">
-    <input name="very_unhappy" type="number" :value="very_unhappy" @input="updateVeryUnhappy" />
+    <input name="very_unhappy" type="number" :value="very_unhappy" @input="onUpdate" />
     <label for="very_unhappy">Very Unhappy</label>
   </span>
 </template>
