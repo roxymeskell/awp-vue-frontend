@@ -62,6 +62,9 @@ function createCombinedImage(urls: string[], reverse = false) {
 
 function getGradientCreator(startColor: string, stopColor: string) {
   return (ctx = null as CanvasRenderingContext2D | null, bottom = 100, top = 0, value = 1) => {
+    if (startColor === stopColor) {
+      return startColor;
+    }
     if (!ctx) {
       ctx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D
     }

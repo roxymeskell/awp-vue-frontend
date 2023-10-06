@@ -6,34 +6,28 @@ import url from 'url'
 
 import { HappinessChartData, HappinessChartDataset } from '@/chart/HappinessBarChart'
 
-export type HappinessData = {
+export type HappinessValueKey = 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'
+export type HappinessPercentKey = 'very_happy_and_happy_percent' | 'very_happy_percent' | 'happy_percent' | 'content_percent' | 'unhappy_percent' | 'very_unhappy_percent' | 'not_happy_percent'
+
+export type Happiness = {
   id: number
   name?: string
   is_workplace?: boolean
-  very_happy: number
-  happy: number
-  content: number
-  unhappy: number
-  very_unhappy: number
-  very_happy_percent?: number
-  happy_percent?: number
-  content_percent?: number
-  unhappy_percent?: number
-  very_unhappy_percent?: number
-  very_happy_and_happy_percent?: number
-  not_happy_percent?: number
-  created_at?: string
-  updated_at?: string
-}
+  readonly created_at?: string
+  readonly updated_at?: string
+} & { [Property in HappinessValueKey]: number }
+& { readonly [Property in HappinessPercentKey]?: number }
 
-type HappinessUpdateData = Pick<HappinessData, 'name' | 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'>
+export type HappinessKey = keyof Happiness
+
+type HappinessUpdateData = Pick<Happiness, 'name' | HappinessValueKey>
 type HappinessCreateData = Pick<
-  HappinessData,
-  'name' | 'is_workplace' | 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'
+  Happiness,
+  'name' | 'is_workplace' | HappinessValueKey
 >
 
 interface HappinessState {
-  happiness: HappinessData[]
+  happiness: Happiness[]
   workplaceHidden: boolean
   // user: UserInfo | null;
 }
@@ -54,7 +48,7 @@ function transformToChartData(
     unhappy_percent = 0,
     very_unhappy_percent = 0,
     not_happy_percent = 0,
-  }: HappinessData,
+  }: Happiness,
   workplaceHidden: boolean = false
 ): HappinessChartDataset {
   return {
@@ -74,7 +68,7 @@ function transformToChartData(
 
 export const useHappinessStore = defineStore('happiness', {
   state: (): HappinessState => ({
-    happiness: [] as HappinessData[],
+    happiness: [] as Happiness[],
     workplaceHidden: true,
   }),
   getters: {
@@ -168,16 +162,17 @@ export const useHappinessStore = defineStore('happiness', {
     toggleWorkplace() {
       this.workplaceHidden = !this.workplaceHidden
     },
-    setHappiness(id: number, key: string, value: number) {
+    setHappiness(id: number, key: HappinessValueKey, value: number) {
       try {
         const happiness = this.happiness.find((h) => h.id == id)
         if (!happiness) {
           throw 'Happiness data not found'
         }
+        happiness[key] = value
         this.happiness.splice(
           this.happiness.findIndex((h) => h.id == id),
           1,
-          { ...happiness, [key]: value }
+          happiness
         )
       } catch (error) {
         alert(error)
@@ -186,6 +181,3 @@ export const useHappinessStore = defineStore('happiness', {
     },
   },
 })
-
-// https://runthatline.com/pinia-typescript-type-state-actions-getters/
-// https://blog.logrocket.com/consume-apis-vuex-pinia-axios/#install-pinia-store

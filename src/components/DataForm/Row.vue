@@ -1,21 +1,14 @@
 <script setup lang="ts">
-  import { HappinessData } from '../../stores/happiness'
+  import { Happiness, HappinessValueKey } from '@/stores/happiness'
 
   const props =
-    defineProps<Pick<HappinessData, 'id' | 'name' | 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'>>()
-  const emit = defineEmits([
-    'update:value',
-    'update:very_happy',
-    'update:happy',
-    'update:content',
-    'update:unhappy',
-    'update:very_unhappy',
-  ])
+    defineProps<Pick<Happiness, 'id' | 'name' | HappinessValueKey>>()
+  const emit = defineEmits([ 'update:value' ])
 
   function onUpdate(e: Event) {
     emit('update:value', {
       id: props.id,
-      key: (e.target as HTMLInputElement).name,
+      key: (e.target as HTMLInputElement).name as HappinessValueKey,
       value: parseInt((e.target as HTMLInputElement).value),
     })
   }

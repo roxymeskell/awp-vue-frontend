@@ -1,14 +1,14 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import HappinessInputRow from './Row.vue'
-  import { useHappinessStore } from '@/stores/happiness'
+  import { useHappinessStore, HappinessValueKey } from '@/stores/happiness'
 
   const store = useHappinessStore()
   const happiness = computed(() => {
     return store.getHappiness
   })
 
-  function onUpdate({ id, key, value }: { id: number; key: string; value: number }) {
+  function onUpdate({ id, key, value }: { id: number; key: HappinessValueKey; value: number }) {
     store.setHappiness(id, key, value)
   }
 
