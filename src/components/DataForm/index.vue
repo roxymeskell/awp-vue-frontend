@@ -31,6 +31,7 @@
       <div class="happiness-grid">
         <HappinessInputRow
           v-for="h in happiness"
+          :key="h.id"
           :id="h.id"
           :name="h.name"
           :very_happy="h.very_happy"

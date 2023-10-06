@@ -7,7 +7,7 @@ import url from 'url'
 import { HappinessChartData, HappinessChartDataset } from '@/chart/HappinessBarChart'
 
 export type HappinessValueKey = 'very_happy' | 'happy' | 'content' | 'unhappy' | 'very_unhappy'
-export type HappinessPercentKey = `${ HappinessValueKey | 'very_happy_and_happy' | 'not_happy' }_percent`
+export type HappinessPercentKey = `${HappinessValueKey | 'very_happy_and_happy' | 'not_happy'}_percent`
 
 export type Happiness = {
   id: number
@@ -15,16 +15,12 @@ export type Happiness = {
   is_workplace?: boolean
   readonly created_at?: string
   readonly updated_at?: string
-} & { [Property in HappinessValueKey]: number }
-& { readonly [Property in HappinessPercentKey]?: number }
+} & { [Property in HappinessValueKey]: number } & { readonly [Property in HappinessPercentKey]?: number }
 
 export type HappinessKey = keyof Happiness
 
 type HappinessUpdateData = Pick<Happiness, 'name' | HappinessValueKey>
-type HappinessCreateData = Pick<
-  Happiness,
-  'name' | 'is_workplace' | HappinessValueKey
->
+type HappinessCreateData = Pick<Happiness, 'name' | 'is_workplace' | HappinessValueKey>
 
 interface HappinessState {
   happiness: Happiness[]
@@ -137,10 +133,7 @@ export const useHappinessStore = defineStore('happiness', {
     },
     async createHappiness(happinessData: HappinessCreateData) {
       try {
-        const data = await axios.post(
-          url.resolve(import.meta.env.VITE_API_BASE_URL, '/api/happiness'),
-          happinessData
-        )
+        const data = await axios.post(url.resolve(import.meta.env.VITE_API_BASE_URL, '/api/happiness'), happinessData)
         this.happiness.push(data.data)
       } catch (error) {
         alert(error)
