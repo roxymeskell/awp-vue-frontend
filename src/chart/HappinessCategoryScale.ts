@@ -75,7 +75,7 @@ export default class HappinessCategoryScale extends CategoryScale<IHappinessCate
   static override id = 'happiness-category'
   static defaults: any = /*! __PURE__ */ merge({}, [CategoryScale.defaults, defaultConfig])
 
-  private _nodes: any[] = []
+  private _nodes: ILabelNode[] = []
   private _factor: number = 1
   private _totalWidth: number = 0
 

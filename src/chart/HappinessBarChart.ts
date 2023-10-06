@@ -114,10 +114,6 @@ class HappinessBarController extends BarController {
       size,
     }
   }
-
-  public override draw() {
-    super.draw()
-  }
 }
 
 const HappinessBarChart = createTypedChart<'happiness-bar', HappinessDataPoint[]>(
