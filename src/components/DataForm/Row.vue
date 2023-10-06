@@ -1,9 +1,8 @@
 <script setup lang="ts">
   import { Happiness, HappinessValueKey } from '@/stores/happiness'
 
-  const props =
-    defineProps<Pick<Happiness, 'id' | 'name' | HappinessValueKey>>()
-  const emit = defineEmits([ 'update:value' ])
+  const props = defineProps<Pick<Happiness, 'id' | 'name' | HappinessValueKey>>()
+  const emit = defineEmits(['update:value'])
 
   function onUpdate(e: Event) {
     emit('update:value', {
