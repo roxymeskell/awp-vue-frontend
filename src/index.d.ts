@@ -1,4 +1,3 @@
-import { ChartTypeRegistry } from 'chart.js'
 import { HappinessDataPoint } from './chart/HappinessBarChart'
 
 declare module '*.svg'
