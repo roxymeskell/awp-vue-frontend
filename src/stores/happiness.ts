@@ -93,7 +93,7 @@ export const useHappinessStore = defineStore('happiness', {
   actions: {
     async fetchAllHappiness() {
       try {
-        const data = await axios.get(url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness'))
+        const data = await axios.get(url.resolve(import.meta.env.VITE_API_BASE_URL, '/api/happiness'))
         this.happiness = data.data
       } catch (error) {
         alert(error)
@@ -102,7 +102,7 @@ export const useHappinessStore = defineStore('happiness', {
     },
     async fetchHappiness(id: number) {
       try {
-        const data = await axios.get(url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness/' + id))
+        const data = await axios.get(url.resolve(import.meta.env.VITE_API_BASE_URL, '/api/happiness/' + id))
         const index = this.happiness.findIndex((h) => h.id == id)
         if (index != -1) {
           this.happiness.splice(
@@ -121,7 +121,7 @@ export const useHappinessStore = defineStore('happiness', {
     async updateHappiness(id: number, happinessData: HappinessUpdateData) {
       try {
         const data = await axios.put(
-          url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness/' + id),
+          url.resolve(import.meta.env.VITE_API_BASE_URL, '/api/happiness/' + id),
           happinessData
         )
         // Should happiness be indexed by id?
@@ -138,7 +138,7 @@ export const useHappinessStore = defineStore('happiness', {
     async createHappiness(happinessData: HappinessCreateData) {
       try {
         const data = await axios.post(
-          url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness'),
+          url.resolve(import.meta.env.VITE_API_BASE_URL, '/api/happiness'),
           happinessData
         )
         this.happiness.push(data.data)
@@ -149,7 +149,7 @@ export const useHappinessStore = defineStore('happiness', {
     },
     async deleteHappiness(id: number) {
       try {
-        await axios.delete(url.resolve(import.meta.env.VITE_BASE_API_ENDPOINT, '/api/happiness/' + id))
+        await axios.delete(url.resolve(import.meta.env.VITE_API_BASE_URL, '/api/happiness/' + id))
         this.happiness.splice(
           this.happiness.findIndex((h) => h.id == id),
           1
